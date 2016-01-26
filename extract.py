@@ -1,15 +1,12 @@
-import sys
 import operator
 import re
 from urlparse import urlparse
 import csv
-import pprint
 
 # Pattern by Gruber for extracting URLs from a text string
 GRUBER_URLINTEXT_PAT = re.compile(ur'(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?\xab\xbb\u201c\u201d\u2018\u2019]))')
 GRUBER_URLINTEXT_PAT = re.compile(r'https?://')
 ISBN_10_PAT = re.compile(r'dp/([0-9]{9}[\d|X])')
-#url.match("/([a-zA-Z0-9]{10})(?:[/?]|$)")
 
 # ISBN-10 pattern. Amazon seems to be using these in URLs for books.
 ISBN_10_REGEX = r'/([0-9]{9}[\d|X])'
