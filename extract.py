@@ -16,8 +16,9 @@ TEXT_FILENAME = 'HNCommentsAll.json'
 
 def save_dict(d):
     w = csv.writer(open("output.csv", "w"))
+
+    # Iterate through the dictionary's key val pairs sorted by value (largest first)
     for key, val in iter(sorted(d.items(), key=operator.itemgetter(1), reverse=True)):
-        #for key, val in d.items():
         w.writerow([key, val])
 
 def read_file_in_chunks(file_object, chunk_size=4096):
