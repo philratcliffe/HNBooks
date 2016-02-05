@@ -27,6 +27,12 @@ def save_dict(d):
     """Write the dictionary in CSV format to a file"""
     w = csv.writer(open("output.csv", "w"))
 
+    AMAZON_ACCESS_KEY=ConfigSectionMap("Credentials")["amazon_access_key"]
+    AMAZON_SECRET_KEY=ConfigSectionMap("Credentials")["amazon_secret_key"]
+    AMAZON_ASSOC_TAG=ConfigSectionMap("Credentials")["amazon_assoc_tag"]
+    amazon = AmazonAPI(AMAZON_ACCESS_KEY, AMAZON_SECRET_KEY, AMAZON_ASSOC_TAG)
+    product = amazon.lookup(ItemId='1449327141')
+    print product.title
     # Iterate through the dictionary's key value pairs sorted by value
     # (largest first)
     for key, val in iter(sorted(d.items(), key=operator.itemgetter(1), reverse=True)):
