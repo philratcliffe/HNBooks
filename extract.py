@@ -27,12 +27,6 @@ def save_dict(d):
     """Write the dictionary in CSV format to a file"""
     w = csv.writer(open("output.csv", "w"))
 
-    AMAZON_ACCESS_KEY=ConfigSectionMap("Credentials")["amazon_access_key"]
-    AMAZON_SECRET_KEY=ConfigSectionMap("Credentials")["amazon_secret_key"]
-    AMAZON_ASSOC_TAG=ConfigSectionMap("Credentials")["amazon_assoc_tag"]
-    amazon = AmazonAPI(AMAZON_ACCESS_KEY, AMAZON_SECRET_KEY, AMAZON_ASSOC_TAG)
-    product = amazon.lookup(ItemId='1449327141')
-    print product.title
     # Iterate through the dictionary's key value pairs sorted by value
     # (largest first)
     for key, val in iter(sorted(d.items(), key=operator.itemgetter(1), reverse=True)):
@@ -48,10 +42,13 @@ def read_file_in_chunks(file_object, chunk_size=4096):
         yield data
 
 
-def process_isbns(isbns, d):
-    """Count up the occurrences of each ISBN"""
+def process_isbns(isbns, titles, d):
+    """Map ISBN to title and keep count of the occurrences of each ISBN"""
     for isbn in isbns:
         d[isbn] = d.get(isbn, 0) + 1
+        if isbn not in titles:
+            product = amazon.lookup(ItemId=isbn)
+            titles[isbn] = product.title
 
 
 def ConfigSectionMap(section):
@@ -67,12 +64,16 @@ def ConfigSectionMap(section):
     return dict1
 
 config = ConfigParser.ConfigParser()
-print config.read(AMAZON_CREDENTIALS_FILE)
-print config.sections()
-print ConfigSectionMap("Credentials")["amazon_access_key"]
+config.read(AMAZON_CREDENTIALS_FILE)
+AMAZON_ACCESS_KEY = ConfigSectionMap("Credentials")["amazon_access_key"]
+AMAZON_SECRET_KEY = ConfigSectionMap("Credentials")["amazon_secret_key"]
+AMAZON_ASSOC_TAG = ConfigSectionMap("Credentials")["amazon_assoc_tag"]
+amazon = AmazonAPI(AMAZON_ACCESS_KEY, AMAZON_SECRET_KEY, AMAZON_ASSOC_TAG)
+
 
 
 d = {}
+titles = {}
 
 # Open the file containing all the HN data (entries, comments etc)
 f = open(HN_DATA_FILENAME, 'r')
@@ -80,7 +81,7 @@ f = open(HN_DATA_FILENAME, 'r')
 # Look for an ISBN in URLs and keep track of those found
 for i, chunk in enumerate(read_file_in_chunks(f)):
     isbns = ISBN_10_PAT.findall(chunk)
-    process_isbns(isbns, d)
+    process_isbns(isbns, titles, d)
     save_dict(d)
     if i % 10000 == 0:
         print "========================================================"

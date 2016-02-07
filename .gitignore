@@ -1,3 +1,4 @@
+output.csv
 *.json
 *.*-
 .amazon_credentials
