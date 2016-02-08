@@ -23,14 +23,15 @@ HN_DATA_FILENAME = 'HNCommentsAll.json'
 AMAZON_CREDENTIALS_FILE = '.amazon_credentials'
 
 
-def save_dict(d):
+def write_csv(isbn_count, titles):
     """Write the dictionary in CSV format to a file"""
     w = csv.writer(open("output.csv", "w"))
 
     # Iterate through the dictionary's key value pairs sorted by value
     # (largest first)
-    for key, val in iter(sorted(d.items(), key=operator.itemgetter(1), reverse=True)):
-        w.writerow([key, val])
+    for key, val in iter(sorted(isbn_count.items(), key=operator.itemgetter(1), reverse=True)):
+        title = titles[key]
+        w.writerow([key, title, val])
 
 
 def read_file_in_chunks(file_object, chunk_size=4096):
@@ -70,9 +71,7 @@ AMAZON_SECRET_KEY = ConfigSectionMap("Credentials")["amazon_secret_key"]
 AMAZON_ASSOC_TAG = ConfigSectionMap("Credentials")["amazon_assoc_tag"]
 amazon = AmazonAPI(AMAZON_ACCESS_KEY, AMAZON_SECRET_KEY, AMAZON_ASSOC_TAG)
 
-
-
-d = {}
+isbn_count = {}
 titles = {}
 
 # Open the file containing all the HN data (entries, comments etc)
@@ -81,9 +80,9 @@ f = open(HN_DATA_FILENAME, 'r')
 # Look for an ISBN in URLs and keep track of those found
 for i, chunk in enumerate(read_file_in_chunks(f)):
     isbns = ISBN_10_PAT.findall(chunk)
-    process_isbns(isbns, titles, d)
-    save_dict(d)
+    process_isbns(isbns, titles, isbn_count)
+    write_csv(isbn_count, titles)
     if i % 10000 == 0:
         print "========================================================"
         print i
-        print(d)
+        print(isbn_count)
