@@ -43,6 +43,20 @@ def read_file_in_chunks(file_object, chunk_size=4096):
         yield data
 
 
+
+
+def count_isbns(isbns, isbn_count):
+    """Count the occurrences of each ISBN found"""
+    for isbn in isbns:
+        isbn_count[isbn] = isbn_count.get(isbn, 0) + 1
+
+def map_isbns_to_titles(isbn_count, titles):
+    for isbn in isbn_count:
+        if isbn not in titles:
+            product = amazon.lookup(ItemId=isbn)
+            titles[isbn] = product.title
+
+//TODO replace this function with the two above
 def process_isbns(isbns, titles, d):
     """Map ISBN to title and keep count of the occurrences of each ISBN"""
     for isbn in isbns:
