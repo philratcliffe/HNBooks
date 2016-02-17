@@ -56,7 +56,7 @@ def map_isbns_to_titles(isbn_count, titles):
             product = amazon.lookup(ItemId=isbn)
             titles[isbn] = product.title
 
-//TODO replace this function with the two above
+# TODO replace this function with the two above
 def process_isbns(isbns, titles, d):
     """Map ISBN to title and keep count of the occurrences of each ISBN"""
     for isbn in isbns:
